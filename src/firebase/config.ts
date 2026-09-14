@@ -1,12 +1,18 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore, doc, getDocFromServer } from 'firebase/firestore';
+import { initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
 import firebaseConfig from '../../firebase-applet-config.json';
 
 const app = initializeApp(firebaseConfig);
 
-// CRITICAL: Must supply firestoreDatabaseId
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+// CRITICAL: Initialize Firestore with experimentalForceLongPolling to avoid 10-second backend connection timeout in sandboxed iframes
+export const db = initializeFirestore(
+  app,
+  {
+    experimentalForceLongPolling: true,
+  },
+  firebaseConfig.firestoreDatabaseId
+);
 export const auth = getAuth(app);
 
 export enum OperationType {
@@ -49,12 +55,17 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 // Initial boot connection test
 export async function testConnection(): Promise<boolean> {
   try {
-    await getDocFromServer(doc(db, 'test', 'connection'));
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('the client is offline: connection check timed out')), 5000)
+    );
+    await Promise.race([getDocFromServer(doc(db, 'test', 'connection')), timeoutPromise]);
     console.log('Firestore connection verified successfully.');
     return true;
   } catch (error) {
     if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.warn('Firestore offline fallback mode activated.');
+      console.error('Please check your Firebase configuration.');
+    } else {
+      console.warn('Firestore initial connection note:', error);
     }
     return false;
   }
