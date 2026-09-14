@@ -1,0 +1,6 @@
+{
+  "name": "CBT SD Cerdas",
+  "description": "Aplikasi Computer Based Test (CBT) SD Kelas 1-6 dengan AI Gemini untuk pembuatan soal Taksonomi Bloom, skoring uraian otomatis, live monitoring anti-kecurangan, analisis hasil, dan remidi/pengayaan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,88 @@
+{
+  "entities": {
+    "Student": {
+      "title": "Student",
+      "description": "Elementary school student master data (SD Kelas 1-6)",
+      "type": "object",
+      "properties": {
+        "nisn": { "type": "string", "description": "National Student ID", "maxLength": 30 },
+        "name": { "type": "string", "description": "Full name of student", "maxLength": 100 },
+        "grade": { "type": "number", "description": "Class grade 1 to 6" },
+        "gender": { "type": "string", "enum": ["L", "P"], "description": "Gender L or P" },
+        "parentName": { "type": "string", "description": "Parent or guardian name", "maxLength": 100 },
+        "parentPhone": { "type": "string", "description": "Parent WhatsApp or phone number", "maxLength": 30 },
+        "totalXp": { "type": "number", "description": "Gamification total XP points" },
+        "level": { "type": "number", "description": "Student gamification level" },
+        "streak": { "type": "number", "description": "Consecutive active days" }
+      },
+      "required": ["nisn", "name", "grade"]
+    },
+    "Exam": {
+      "title": "Exam",
+      "description": "Computer Based Test exam package",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Exam title", "maxLength": 200 },
+        "subject": { "type": "string", "description": "Subject name", "maxLength": 100 },
+        "grade": { "type": "number", "description": "Grade level 1-6" },
+        "durationMinutes": { "type": "number", "description": "Duration in minutes" },
+        "passingGrade": { "type": "number", "description": "KKM passing threshold" },
+        "totalQuestions": { "type": "number", "description": "Total question count (up to 50)" },
+        "status": { "type": "string", "enum": ["draft", "active", "completed"], "description": "Exam status" },
+        "antiCheatEnabled": { "type": "boolean", "description": "Enable full-screen & tab switch lock" },
+        "createdAt": { "type": "string", "description": "ISO timestamp string" }
+      },
+      "required": ["title", "subject", "grade", "durationMinutes"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Student exam result and AI assessment",
+      "type": "object",
+      "properties": {
+        "examId": { "type": "string", "description": "Referenced exam ID", "maxLength": 100 },
+        "studentId": { "type": "string", "description": "Referenced student ID", "maxLength": 100 },
+        "studentName": { "type": "string", "description": "Student name", "maxLength": 100 },
+        "studentNisn": { "type": "string", "description": "Student NISN", "maxLength": 30 },
+        "totalScore": { "type": "number", "description": "Final score 0-100" },
+        "passed": { "type": "boolean", "description": "Whether score >= KKM" },
+        "violationCount": { "type": "number", "description": "Anti-cheat tab switch count" },
+        "remedialCategory": { "type": "string", "enum": ["tuntas", "remedi", "pengayaan"], "description": "Action follow up" },
+        "submittedAt": { "type": "string", "description": "Submission ISO timestamp" }
+      },
+      "required": ["examId", "studentId", "totalScore", "passed"]
+    },
+    "Letterhead": {
+      "title": "Letterhead",
+      "description": "Official school Kop Surat configuration",
+      "type": "object",
+      "properties": {
+        "schoolName": { "type": "string", "description": "Official name of SD", "maxLength": 150 },
+        "governmentName": { "type": "string", "description": "Dinas Pendidikan / Pemkot", "maxLength": 150 },
+        "npsn": { "type": "string", "description": "School NPSN code", "maxLength": 50 },
+        "address": { "type": "string", "description": "School complete address", "maxLength": 300 },
+        "phone": { "type": "string", "description": "School telephone", "maxLength": 50 },
+        "headmasterName": { "type": "string", "description": "Headmaster full name with title", "maxLength": 100 },
+        "headmasterNip": { "type": "string", "description": "Headmaster NIP", "maxLength": 50 }
+      },
+      "required": ["schoolName", "governmentName"]
+    }
+  },
+  "firestore": {
+    "/students/{studentId}": {
+      "schema": "Student",
+      "description": "Collection of student records"
+    },
+    "/exams/{examId}": {
+      "schema": "Exam",
+      "description": "Collection of exam test packages"
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "Collection of student exam results and AI evaluations"
+    },
+    "/letterheads/{letterheadId}": {
+      "schema": "Letterhead",
+      "description": "Official school kop surat letterheads"
+    }
+  }
+}

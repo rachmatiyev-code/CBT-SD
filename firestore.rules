@@ -1,0 +1,49 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Test connection doc (validated by app boot)
+    match /test/{docId} {
+      allow read, write: if true;
+    }
+
+    // Students collection
+    match /students/{studentId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Exams collection
+    match /exams/{examId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Submissions collection
+    match /submissions/{submissionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Letterheads / Kop Surat collection
+    match /letterheads/{letterheadId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Live monitoring sessions
+    match /liveSessions/{sessionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+  }
+}
