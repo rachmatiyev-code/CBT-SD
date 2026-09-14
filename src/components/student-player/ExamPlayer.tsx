@@ -155,12 +155,28 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({
       }
     };
 
+    const handleStudentReset = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail.studentId === student.id && detail.examId === exam.id) {
+        setAnswers({});
+        setCurrentQIndex(0);
+        setTimeRemainingSeconds(exam.durationMinutes * 60);
+        setViolationCount(0);
+        setViolationsLog([]);
+        setIsLockedByTeacher(false);
+        setTeacherMessageToast('Ujian telah direset oleh Guru Pengawas. Kamu dapat mengulang dari nomor 1.');
+        setTimeout(() => setTeacherMessageToast(null), 7000);
+      }
+    };
+
     window.addEventListener('cbt-teacher-direct-message', handleTeacherMessage);
     window.addEventListener('cbt-teacher-command', handleTeacherCommand);
+    window.addEventListener('cbt-student-reset', handleStudentReset);
 
     return () => {
       window.removeEventListener('cbt-teacher-direct-message', handleTeacherMessage);
       window.removeEventListener('cbt-teacher-command', handleTeacherCommand);
+      window.removeEventListener('cbt-student-reset', handleStudentReset);
     };
   }, [student.id, exam.id]);
 
@@ -495,6 +511,21 @@ export const ExamPlayer: React.FC<ExamPlayerProps> = ({
               <div className="text-slate-800 text-base sm:text-lg font-medium leading-relaxed">
                 {currentQuestion.prompt}
               </div>
+
+              {/* Question Image if present */}
+              {currentQuestion.imageUrl && (
+                <div className="my-3 p-3 bg-slate-100/80 border border-slate-200 rounded-2xl flex flex-col items-center justify-center">
+                  <img
+                    src={currentQuestion.imageUrl}
+                    alt={`Ilustrasi Soal Nomor ${currentQuestion.number}`}
+                    className="max-h-72 w-auto object-contain rounded-xl shadow-xs"
+                    referrerPolicy="no-referrer"
+                  />
+                  <p className="text-xs text-slate-500 italic mt-2 font-medium">
+                    Perhatikan gambar / ilustrasi di atas untuk menjawab soal
+                  </p>
+                </div>
+              )}
 
               {/* Supporting Doc notice if any */}
               {exam.supportingDocContent && (

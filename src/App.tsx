@@ -71,6 +71,21 @@ export default function App() {
 
     if (loadedStudents.length > 0) setSelectedStudentId(loadedStudents[0].id);
     if (loadedExams.length > 0) setSelectedExamIdForStudent(loadedExams[0].id);
+
+    // Check URL parameters for direct student exam access
+    try {
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlMode = urlParams.get('mode');
+      const urlExamId = urlParams.get('examId');
+      if (urlMode === 'student') {
+        setAppMode('student');
+      }
+      if (urlExamId) {
+        setSelectedExamIdForStudent(urlExamId);
+      }
+    } catch {
+      // Ignore if URL parsing is unavailable
+    }
   }, []);
 
   const activeStudent = students.find((s) => s.id === selectedStudentId) || students[0];
@@ -133,6 +148,10 @@ export default function App() {
                   onSelectExamForPrint={(exam) =>
                     setPrintModalState({ isOpen: true, type: 'exam_sheet', exam })
                   }
+                  onOpenStudentMode={(examId) => {
+                    setSelectedExamIdForStudent(examId);
+                    setAppMode('student');
+                  }}
                 />
               )}
 

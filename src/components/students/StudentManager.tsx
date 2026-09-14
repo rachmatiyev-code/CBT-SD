@@ -35,6 +35,12 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3500);
+  };
 
   // Form states
   const [formData, setFormData] = useState<Partial<Student>>({
@@ -106,13 +112,16 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
 
     setIsAddingNew(false);
     setEditingStudent(null);
+    showToast(`Data siswa "${studentToSave.name}" (NISN: ${studentToSave.nisn}) berhasil disimpan!`);
   };
 
   const handleDelete = async (id: string) => {
+    const studentToDelete = students.find((s) => s.id === id);
     await storageService.deleteStudent(id);
     const refreshed = storageService.getStudents();
     onStudentsUpdated(refreshed);
     setDeleteConfirmId(null);
+    showToast(`Data siswa ${studentToDelete?.name || ''} berhasil dihapus.`);
   };
 
   const handleExportCsv = () => {
@@ -140,6 +149,14 @@ export const StudentManager: React.FC<StudentManagerProps> = ({
 
   return (
     <div className="space-y-6 max-w-6xl mx-auto">
+      {/* Toast Feedback */}
+      {toastMessage && (
+        <div className="fixed top-5 right-5 z-50 bg-slate-900 text-white px-5 py-3 rounded-2xl shadow-xl border border-slate-700 flex items-center gap-3 animate-fade-in text-sm font-semibold">
+          <Sparkles className="w-5 h-5 text-emerald-400 shrink-0" />
+          <span>{toastMessage}</span>
+        </div>
+      )}
+
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-xs">
         <div>

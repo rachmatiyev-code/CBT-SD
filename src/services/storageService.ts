@@ -143,6 +143,51 @@ export const storageService = {
     }
   },
 
+  async deleteSubmission(submissionId: string): Promise<void> {
+    const current = this.getSubmissions().filter((s) => s.id !== submissionId);
+    localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(current));
+    try {
+      await deleteDoc(doc(db, 'submissions', submissionId));
+    } catch (err) {
+      console.warn('Firestore delete submission fallback:', err);
+    }
+  },
+
+  // Reset exam attempt for a student so they can retake the test
+  async resetStudentExamAttempt(examId: string, studentId: string): Promise<void> {
+    // 1. Remove submissions for this student & exam
+    const allSubs = this.getSubmissions();
+    const subsToDelete = allSubs.filter((s) => s.examId === examId && s.studentId === studentId);
+    const remainingSubs = allSubs.filter((s) => !(s.examId === examId && s.studentId === studentId));
+    localStorage.setItem(STORAGE_KEYS.SUBMISSIONS, JSON.stringify(remainingSubs));
+
+    for (const s of subsToDelete) {
+      try {
+        await deleteDoc(doc(db, 'submissions', s.id));
+      } catch (err) {
+        // fallback
+      }
+    }
+
+    // 2. Clear or reset live monitoring session
+    const sessions = this.getLiveSessions();
+    const remainingSessions = sessions.filter((s) => !(s.examId === examId && s.studentId === studentId));
+    localStorage.setItem(STORAGE_KEYS.LIVE_SESSIONS, JSON.stringify(remainingSessions));
+
+    try {
+      await deleteDoc(doc(db, 'liveSessions', `${examId}_${studentId}`));
+    } catch (err) {
+      // fallback
+    }
+
+    // 3. Dispatch global reset event
+    window.dispatchEvent(
+      new CustomEvent('cbt-student-reset', {
+        detail: { examId, studentId, timestamp: new Date().toISOString() },
+      })
+    );
+  },
+
   // --- Letterhead (Kop Surat) ---
   getLetterhead(): Letterhead {
     const raw = localStorage.getItem(STORAGE_KEYS.LETTERHEAD);

@@ -170,10 +170,21 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             ))}
           </select>
 
+          {onPrintClassicalReport && (
+            <button
+              id="btn-print-exam-analysis"
+              onClick={() => currentExam && onPrintClassicalReport(currentExam, currentSubmissions)}
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+              title="Cetak Laporan Analisis Hasil Ujian Lengkap dengan Kop Surat & Analisis Butir Soal"
+            >
+              <Printer className="w-4 h-4" /> Cetak Analisis Hasil Ujian
+            </button>
+          )}
+
           <button
             id="btn-export-classical-csv"
             onClick={exportClassicalCsv}
-            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer"
+            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
           >
             <Download className="w-4 h-4" /> Ekspor CSV
           </button>
