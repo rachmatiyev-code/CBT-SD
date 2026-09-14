@@ -163,11 +163,20 @@ export default function App() {
                 <AnalyticsDashboard
                   exams={exams}
                   submissions={submissions}
-                  onPrintClassicalReport={(exam, subs) =>
-                    setPrintModalState({ isOpen: true, type: 'classical_report', exam })
+                  onPrintClassicalReport={(exam, subs, docType) =>
+                    setPrintModalState({
+                      isOpen: true,
+                      type: docType || 'exam_analysis',
+                      exam,
+                    })
                   }
                   onPrintIndividualReport={(sub) =>
-                    setPrintModalState({ isOpen: true, type: 'student_report', submission: sub })
+                    setPrintModalState({
+                      isOpen: true,
+                      type: 'student_report',
+                      submission: sub,
+                      exam: exams.find((e) => e.id === sub.examId) || activeExam,
+                    })
                   }
                   onOpenParentNotifier={(sub) => setParentNotifierSub(sub)}
                 />

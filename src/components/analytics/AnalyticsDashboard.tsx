@@ -33,7 +33,11 @@ import {
 interface AnalyticsDashboardProps {
   exams: Exam[];
   submissions: Submission[];
-  onPrintClassicalReport?: (exam: Exam, subs: Submission[]) => void;
+  onPrintClassicalReport?: (
+    exam: Exam,
+    subs: Submission[],
+    docType?: 'exam_analysis' | 'classical_report'
+  ) => void;
   onPrintIndividualReport?: (sub: Submission) => void;
   onOpenParentNotifier?: (sub: Submission) => void;
 }
@@ -171,22 +175,39 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </select>
 
           {onPrintClassicalReport && (
-            <button
-              id="btn-print-exam-analysis"
-              onClick={() => currentExam && onPrintClassicalReport(currentExam, currentSubmissions)}
-              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
-              title="Cetak Laporan Analisis Hasil Ujian Lengkap dengan Kop Surat & Analisis Butir Soal"
-            >
-              <Printer className="w-4 h-4" /> Cetak Analisis Hasil Ujian
-            </button>
+            <>
+              <button
+                id="btn-print-exam-analysis"
+                onClick={() =>
+                  currentExam &&
+                  onPrintClassicalReport(currentExam, currentSubmissions, 'exam_analysis')
+                }
+                className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                title="Pratinjau & Cetak Laporan Analisis Hasil Ujian Lengkap dengan Kop Surat & Analisis Butir Soal"
+              >
+                <Printer className="w-4 h-4" /> Cetak Analisis Ujian
+              </button>
+
+              <button
+                id="btn-print-classical-summary"
+                onClick={() =>
+                  currentExam &&
+                  onPrintClassicalReport(currentExam, currentSubmissions, 'classical_report')
+                }
+                className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                title="Pratinjau & Cetak Rekapitulasi Nilai Klasikal Seluruh Kelas"
+              >
+                <FileText className="w-4 h-4 text-slate-500" /> Cetak Rekap Nilai
+              </button>
+            </>
           )}
 
           <button
             id="btn-export-classical-csv"
             onClick={exportClassicalCsv}
-            className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+            className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
           >
-            <Download className="w-4 h-4" /> Ekspor CSV
+            <Download className="w-4 h-4" /> CSV
           </button>
         </div>
       </div>
